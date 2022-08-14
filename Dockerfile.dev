@@ -1,0 +1,27 @@
+FROM node:16-alpine
+
+USER node
+
+RUN mkdir -p /home/node/app/public && mkdir -p /home/node/app/src
+
+WORKDIR /home/node/app
+
+COPY --chown=node:node [".gitignore", "README.md", "tsconfig.json", "./"]
+
+COPY --chown=node:node package.json .
+
+RUN npm install
+
+WORKDIR /home/node/app/public
+
+COPY --chown=node:node public .
+
+WORKDIR /home/node/app/src
+
+COPY --chown=node:node src .
+
+WORKDIR /home/node/app
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start"]
