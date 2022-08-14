@@ -1,0 +1,15 @@
+FROM node:16-alpine as builder
+USER node
+RUN mkdir -p /home/node/app/public && mkdir -p /home/node/app/src
+WORKDIR /home/node/app
+COPY --chown=node:node ["package.json", "tsconfig.json", "./"]
+RUN npm install
+WORKDIR /home/node/app/public
+COPY --chown=node:node public .
+WORKDIR /home/node/app/src
+COPY --chown=node:node src .
+RUN npm run build
+
+
+FROM nginx
+COPY --from=builder /home/node/app/build /usr/share/nginx/html
